@@ -1,0 +1,21 @@
+
+*.vsidx
+Data Project/.vs/Data Project/v17/.suo
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.ipch
+*.sln
+*.vcxproj
+*.filters
+*.user
+*.obj
+*.exe
+*.recipe
+*.ilk
+*.log
+*.pdb
+*.tlog
+*.txt
+*.idb
