@@ -8,6 +8,7 @@ public:
     BTreeNode** C;
     int n;
     bool leaf;
+    string content;
 
     BTreeNode(int _t, bool _leaf);
 
@@ -25,6 +26,14 @@ public:
     void borrowFromNext(int idx);
     void merge(int idx);
     BTreeNode* search(int k);
+
+    // Getter and Setter methods
+    int getKeyAtIndex(int index) const;
+    void setKeyAtIndex(int index, int value);
+    BTreeNode* getChildAtIndex(int index) const;
+    void setChildAtIndex(int index, BTreeNode* child);
+    int getNumKeys() const;
+    bool isLeaf() const;
 };
 
 class BTree {
@@ -38,6 +47,10 @@ public:
     BTreeNode* search(int k);
     void insertion(int k);
     void deletion(int k);
+
+    // Getter and Setter methods
+    int getDegree() const;
+    void setDegree(int temp);
 };
 
 // Implementation of BTreeNode member functions
@@ -51,15 +64,39 @@ BTreeNode::BTreeNode(int t1, bool leaf1) {
     n = 0;
 }
 
+int BTreeNode::getKeyAtIndex(int index) const {
+    return keys[index];
+}
+
+void BTreeNode::setKeyAtIndex(int index, int value) {
+    keys[index] = value;
+}
+
+BTreeNode* BTreeNode::getChildAtIndex(int index) const {
+    return C[index];
+}
+
+void BTreeNode::setChildAtIndex(int index, BTreeNode* child) {
+    C[index] = child;
+}
+
+int BTreeNode::getNumKeys() const {
+    return n;
+}
+
+bool BTreeNode::isLeaf() const {
+    return leaf;
+}
+
 void BTreeNode::traverse() {
     int i;
     for (i = 0; i < n; i++) {
-        if (leaf == false)
+        if (!leaf)
             C[i]->traverse();
         cout << " " << keys[i];
     }
 
-    if (leaf == false)
+    if (!leaf)
         C[i]->traverse();
 }
 
@@ -73,7 +110,7 @@ int BTreeNode::findKey(int k) {
 void BTreeNode::insertNonFull(int k) {
     int i = n - 1;
 
-    if (leaf == true) {
+    if (leaf) {
         while (i >= 0 && keys[i] > k) {
             keys[i + 1] = keys[i];
             i--;
@@ -96,7 +133,8 @@ void BTreeNode::insertNonFull(int k) {
     }
 }
 
-void BTreeNode::splitChild(int i, BTreeNode* y) {
+void BTreeNode::splitChild(int i, BTreeNode* y) 
+{
     BTreeNode* z = new BTreeNode(y->t, y->leaf);
     z->n = t - 1;
 
@@ -134,7 +172,7 @@ void BTreeNode::deletion(int k) {
     }
     else {
         if (leaf) {
-            cout << "The key " << k << " is does not exist in the tree\n";
+            cout << "The key " << k << " does not exist in the tree\n";
             return;
         }
 
@@ -311,6 +349,14 @@ BTree::BTree(int temp) {
     t = temp;
 }
 
+int BTree::getDegree() const {
+    return t;
+}
+
+void BTree::setDegree(int temp) {
+    t = temp;
+}
+
 void BTree::traverse() {
     if (root != nullptr)
         root->traverse();
@@ -323,21 +369,21 @@ BTreeNode* BTree::search(int k) {
 void BTree::insertion(int k) {
     if (root == nullptr) {
         root = new BTreeNode(t, true);
-        root->keys[0] = k;
+        root->setKeyAtIndex(0, k);
         root->n = 1;
     }
     else {
         if (root->n == 2 * t - 1) {
             BTreeNode* s = new BTreeNode(t, false);
 
-            s->C[0] = root;
+            s->setChildAtIndex(0, root);
 
             s->splitChild(0, root);
 
             int i = 0;
-            if (s->keys[0] < k)
+            if (s->getKeyAtIndex(0) < k)
                 i++;
-            s->C[i]->insertNonFull(k);
+            s->getChildAtIndex(i)->insertNonFull(k);
 
             root = s;
         }
@@ -346,7 +392,8 @@ void BTree::insertion(int k) {
     }
 }
 
-void BTree::deletion(int k) {
+void BTree::deletion(int k) 
+{
     if (!root) {
         cout << "The tree is empty\n";
         return;
@@ -356,12 +403,13 @@ void BTree::deletion(int k) {
 
     if (root->n == 0) {
         BTreeNode* tmp = root;
-        if (root->leaf)
+        if (root->isLeaf())
             root = nullptr;
         else
-            root = root->C[0];
+            root = root->getChildAtIndex(0);
 
         delete tmp;
     }
     return;
 }
+

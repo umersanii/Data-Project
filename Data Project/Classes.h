@@ -1,5 +1,5 @@
 #include <iostream>
-
+#pragma once
 using std::cout;
 using std::cin;
 using std::endl;
@@ -8,6 +8,7 @@ using std::string;
 template <class t>
 class CNode
 {
+	int ID;
 	t data;
 	CNode* next;
 
@@ -18,11 +19,18 @@ public:
 	{
 		data = 0;
 		next = nullptr;
+		ID = 0;
 	}
 	CNode(t xD)
 	{
 		data = xD;
 		next = nullptr;
+	}
+	CNode(t xD, t xN)
+	{
+		data = xD;
+		next = nullptr;
+		ID = xN;
 	}
 	t getData()
 	{
@@ -40,8 +48,16 @@ public:
 	{
 		next = xN;
 	}
+	void setID(int xID)
+	{
+		ID = xID;
+	}
+	int getID()
+	{
+		return ID;
+	}
 };
-template <class t>
+template <typename t>
 class CircularLinkedList
 {
 	CNode<t>* head;
@@ -77,6 +93,26 @@ public:
 		newNode->setNext(head);
 	}
 
+	void insert(t xN, t xD)
+	{
+		CNode<t>* newNode = new CNode<t>(xN,xD);
+
+		if (head == nullptr)
+		{
+			head = newNode;
+			head->setNext(head);
+			return;
+		}
+
+		CNode<t>* temp = head;
+		while (temp->getNext() != head)
+		{
+			temp = temp->getNext();
+		}
+
+		temp->setNext(newNode);
+		newNode->setNext(head);
+	}
 
 	bool isEmpty()
 	{
@@ -189,6 +225,24 @@ public:
 		cout << "\n";
 	}
 
+
+	void printID()
+	{
+		CNode<t>* temp = head;
+		int c = 0;
+		while (1)
+		{
+			if (c != 0)
+			{
+				if (temp == head)
+					break;
+			}
+			cout << temp->getID() << " ";
+			temp = temp->getNext();
+			c++;
+		}
+		cout << "\n";
+	}
 
 };
 
