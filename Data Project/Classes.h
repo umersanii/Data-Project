@@ -1,4 +1,7 @@
+
 #include <iostream>
+#include "BTree.h"
+
 #pragma once
 using std::cout;
 using std::cin;
@@ -8,37 +11,31 @@ using std::string;
 template <class t>
 class CNode
 {
-	int ID;
-	t data;
+	t ID;
 	CNode* next;
+	BTree* btree;
 
 public:
-	
+
 
 	CNode()
 	{
-		data = 0;
+		ID = 0;
 		next = nullptr;
 		ID = 0;
 	}
 	CNode(t xD)
 	{
-		data = xD;
+		ID = xD;
 		next = nullptr;
 	}
-	CNode(t xD, t xN)
+	t getID()
 	{
-		data = xD;
-		next = nullptr;
-		ID = xN;
+		return ID;
 	}
-	t getData()
+	void setID(int xD)
 	{
-		return data;
-	}
-	void setData(int xD)
-	{
-		data = xD;
+		ID = xD;
 	}
 	CNode* getNext()
 	{
@@ -48,15 +45,10 @@ public:
 	{
 		next = xN;
 	}
-	void setID(int xID)
-	{
-		ID = xID;
-	}
-	int getID()
-	{
-		return ID;
-	}
+	
 };
+
+
 template <typename t>
 class CircularLinkedList
 {
@@ -88,31 +80,12 @@ public:
 		{
 			temp = temp->getNext();
 		}
-		
-		temp->setNext(newNode);
-		newNode->setNext(head);
-	}
-
-	void insert(t xN, t xD)
-	{
-		CNode<t>* newNode = new CNode<t>(xN,xD);
-
-		if (head == nullptr)
-		{
-			head = newNode;
-			head->setNext(head);
-			return;
-		}
-
-		CNode<t>* temp = head;
-		while (temp->getNext() != head)
-		{
-			temp = temp->getNext();
-		}
 
 		temp->setNext(newNode);
 		newNode->setNext(head);
 	}
+
+
 
 	bool isEmpty()
 	{
@@ -135,7 +108,7 @@ public:
 					break;
 				}
 			}
-			if (temp->data == xD)
+			if (temp->ID == xD)
 				return true;
 
 			temp = temp->next;
@@ -157,17 +130,17 @@ public:
 					break;
 				}
 			}
-			if (temp->data == v1)
-				temp->data = v2;
+			if (temp->ID == v1)
+				temp->ID = v2;
 
 			temp = temp->next;
 			c++;
 		}
 	}
-	
+
 	void insertAtIndex(t value, t position)
 	{
-		
+
 		CNode<t>* newNode = new CNode<t>(value);
 		CNode<t>* temp = head;
 		int c = 1;
@@ -186,7 +159,7 @@ public:
 
 	}
 
-	void deleteData(t xD)
+	void deleteID(t xD)
 	{
 		CNode<t>* temp = head;
 		CNode<t>* prev = head;
@@ -194,7 +167,7 @@ public:
 		while (1)
 		{
 
-			if (temp->getData() == xD)
+			if (temp->getID() == xD)
 				break;
 			if (c != 0)
 				prev = prev->getNext();
@@ -218,7 +191,7 @@ public:
 				if (temp == head)
 					break;
 			}
-			cout << temp->getData() << " ";
+			cout << temp->getID() << " ";
 			temp = temp->getNext();
 			c++;
 		}
@@ -245,4 +218,3 @@ public:
 	}
 
 };
-

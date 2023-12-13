@@ -3,13 +3,18 @@
 #include "HelpingFunctions.h"
 #include "BTree.h"
 
-
 using std::cout;
 using std::cin;
 using std::endl;
 using std::string;
+string Dir;
+
+
 int main()
 {
+    createFolderWithCurrentTime(Dir);
+    cout << Dir;
+    cout<<endl;
     int n = 4;
     CircularLinkedList<int>* Clist = makeNumberOfMachines<int>(n);  // Makes n Number of Nodes for Circular Linked List specified in the requirements
     manuallyAssignIDs(Clist->getHead());  // Manually assigns IDs to the Nodes of the Circular Linked List
@@ -45,8 +50,6 @@ int main()
         << k << " is found"
         : cout << endl
         << k << " is not Found\n";
-
-*/
+        */
 }
-
 

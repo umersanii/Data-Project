@@ -19,3 +19,6 @@ Data Project/.vs/Data Project/v17/.suo
 *.tlog
 *.txt
 *.idb
+test/Source.cpp
+test/Useful Methods.h
+test/.vs/test/v17/.suo

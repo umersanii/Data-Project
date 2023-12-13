@@ -1,6 +1,6 @@
 #include <iostream>
 using namespace std;
-
+#pragma once
 class BTreeNode {
 public:
     int* keys;
