@@ -15,6 +15,8 @@ int main()
     createFolderWithCurrentTime(Dir);
     cout << Dir;
     cout<<endl;
+    insertFile(Dir);
+    deleteFile(Dir);
     int n = 4;
     CircularLinkedList<int>* Clist = makeNumberOfMachines<int>(n);  // Makes n Number of Nodes for Circular Linked List specified in the requirements
     manuallyAssignIDs(Clist->getHead());  // Manually assigns IDs to the Nodes of the Circular Linked List

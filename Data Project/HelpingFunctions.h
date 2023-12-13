@@ -1,6 +1,5 @@
 #pragma once
 #include "Classes.h"
-#include <iostream>
 
 #include <iostream>
 #include <windows.h>
@@ -10,6 +9,9 @@
 #include <iomanip>
 #include <locale>
 #include <codecvt>
+#include <fstream>
+#include <stdlib.h>
+
 
 using std::string;
 using std::wstring;
@@ -26,6 +28,11 @@ using std::wcerr;
 using std::cout;
 using std::cin;
 using std::endl;
+using std::ofstream;
+using std::ifstream;
+using std::getline;
+using std::stringstream;
+
 
 void createFolderWithCurrentTime(const wstring& parentPath);
 int CalculateHash(string file, int identifierSpace);
@@ -33,6 +40,9 @@ template <class t>
 CircularLinkedList<t>* makeNumberOfMachines(int n);
 template <typename t>
 void  manuallyAssignIDs(CNode<t>* Cll);
+void insertFile(string Dir);
+void deleteFile(string Dir);
+
 
 
 int CalculateHash(string file, int identifierSpace)
@@ -143,4 +153,65 @@ void createFolderWithCurrentTime(string &Dir)
 			wcerr << L"Failed to create folder. Error code: " << error << std::endl;
 		}
 	}
+}
+
+void insertFile(string Dir)
+{
+	string fileName;
+	cout << "Enter File Name: ";
+	cin >> fileName;
+	fileName = fileName + ".txt";
+	string filePath = Dir + "\\" + fileName;
+	string line;
+	stringstream content;
+	cout << "Input the text you want to write to the file. Type 141 to exit\n";
+	while (true) 
+	{
+		getline(cin, line);
+
+		if (line == "141") 
+		{
+			break;
+		}
+		content << line << '\n';
+
+	}
+
+	ofstream outputFile(filePath);
+	if (outputFile.is_open()) 
+	{
+		outputFile << content.str() << endl;
+		outputFile.close();
+
+		cout << "File created successfully: " << fileName << std::endl;
+	}
+	else
+	{
+		cerr << "Error opening file: " << fileName << std::endl;
+	
+	}
+
+
+}
+
+void deleteFile(string Dir)
+{
+	string fileName;
+	
+
+	cout << "Enter File Name: ";
+	cin >> fileName;
+
+	string filePath = Dir + "\\" + fileName + ".txt";
+	//filePath = "Y:\\Season 3\\DS\\Data-Project\\Data Project\\MachineData\\13-12 19-34-38\\ghost.txt";
+	std::ifstream fileStream(filePath);
+	if (!fileStream.good()) {
+		std::cerr << "Error: File does not exist or cannot be opened.\n";
+		return;
+	}
+	fileStream.close();
+	if (remove(filePath.c_str()) != 0)
+		perror("Error deleting file");
+	else
+		puts("File successfully deleted");
 }
