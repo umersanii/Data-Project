@@ -13,14 +13,11 @@ string Dir;
 int main()
 {
     createFolderWithCurrentTime(Dir);
-    cout << Dir;
-    cout<<endl;
-    insertFile(Dir);
-    deleteFile(Dir);
-    int n = 4;
+    int n = 2;
     CircularLinkedList<int>* Clist = makeNumberOfMachines<int>(n);  // Makes n Number of Nodes for Circular Linked List specified in the requirements
-    manuallyAssignIDs(Clist->getHead());  // Manually assigns IDs to the Nodes of the Circular Linked List
-    insertaNewMachine(Clist);  // Inserts a new Machine in the Circular Linked List
+    addDatainMachines(Clist);
+    //manuallyAssignIDs(Clist->getHead());  // Manually assigns IDs to the Nodes of the Circular Linked List
+    //insertaNewMachine(Clist);  // Inserts a new Machine in the Circular Linked List
 
     cout << "The Circular Linked List is: ";
     Clist->printID();  // Prints the Circular Linked List
@@ -54,4 +51,3 @@ int main()
         << k << " is not Found\n";
         */
 }
-

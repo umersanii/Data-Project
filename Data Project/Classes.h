@@ -8,6 +8,9 @@ using std::cin;
 using std::endl;
 using std::string;
 
+extern string Dir;
+
+
 template <class t>
 class CNode
 {
@@ -53,11 +56,17 @@ template <typename t>
 class CircularLinkedList
 {
 	CNode<t>* head;
-
+	int count;
 public:
+	int getCount()
+	{
+		return count;
+	}
+
 	CircularLinkedList()
 	{
 		head = nullptr;
+		count = 0;
 	}
 
 	CNode<t>* getHead()
@@ -72,6 +81,7 @@ public:
 		{
 			head = newNode;
 			head->setNext(head);
+			count++;
 			return;
 		}
 
@@ -83,6 +93,7 @@ public:
 
 		temp->setNext(newNode);
 		newNode->setNext(head);
+		count++;
 	}
 
 
@@ -156,6 +167,7 @@ public:
 
 			temp = temp->next;
 		}
+		count++;
 
 	}
 
@@ -177,6 +189,7 @@ public:
 
 		prev->setNext(temp->getNext());
 		delete temp;
+		count--;
 	}
 
 

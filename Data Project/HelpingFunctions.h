@@ -33,6 +33,8 @@ using std::ifstream;
 using std::getline;
 using std::stringstream;
 
+extern string Dir;
+
 
 void createFolderWithCurrentTime(const wstring& parentPath);
 int CalculateHash(string file, int identifierSpace);
@@ -42,7 +44,9 @@ template <typename t>
 void  manuallyAssignIDs(CNode<t>* Cll);
 void insertFile(string Dir);
 void deleteFile(string Dir);
-
+void relocateFile(string source, string destination);
+void addDatainMachines();
+void createFolder(string name);
 
 
 int CalculateHash(string file, int identifierSpace)
@@ -62,12 +66,39 @@ int CalculateHash(string file, int identifierSpace)
 template <class t>
 CircularLinkedList<t>* makeNumberOfMachines(int n)
 {
+	char choice;
+	bool flag = true;
+enteragain:
+	cout<<"Would you like to add the machines ID manually? (y/n): \n";
+	cin >> choice;
+	if (choice == 'y' || choice == 'Y')
+	{
+		flag = false;
+	}
+	else if (choice == 'n' || choice == 'N')
+	{
+		flag = true;
+	}
+	else
+	{
+		cout << "Invalid Choice. Enter again\n";
+		goto enteragain;
+	}
 	CircularLinkedList<t>* Clist = new CircularLinkedList<t>();
 	for (int i = 0; i < n; i++)
 	{
 		Clist->insert(i);
+		if (flag == true)
+		{
+			createFolder(to_string(i));
+		}
 	}
 
+	if(flag == false)
+	{
+		manuallyAssignIDs(Clist->getHead());
+
+	}
 	return Clist;
 }
 
@@ -91,6 +122,7 @@ void  manuallyAssignIDs(CNode<t>* Cll)
 			break;
 
 		flag = false;
+		createFolder(to_string(tempID));
 	}
 
 }	
@@ -103,6 +135,8 @@ void insertaNewMachine(CircularLinkedList<t>* Cll)
 	cin >> ID;
 	Cll->insert(ID);
 	cout<<"\nMachine Added Successfully\n";
+
+	createFolder(to_string(ID));
 	return;
 	
 }
@@ -120,6 +154,31 @@ void insertaNewMachine(CircularLinkedList<t>* Cll)
 //}
 
 
+void createFolder(string name)
+{
+	
+	wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	wstring folderName = converter.from_bytes(name);
+
+	wstring wideFolderPath = converter.from_bytes(Dir + "\\" + name);
+	string tDir = converter.to_bytes(wideFolderPath);
+	if (CreateDirectory(wideFolderPath.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
+	{
+		wcout << L"Folder '" << folderName << L"' created successfully." << endl;
+	}
+	else
+	{
+		DWORD error = GetLastError();
+		if (error == ERROR_PATH_NOT_FOUND)
+		{
+			wcerr << L"One or more intermediate directories do not exist." << endl;
+		}
+		else
+		{
+			wcerr << L"Failed to create folder. Error code: " << error << endl;
+		}
+	}
+}
 
 
 void createFolderWithCurrentTime(string &Dir)
@@ -155,13 +214,14 @@ void createFolderWithCurrentTime(string &Dir)
 	}
 }
 
-void insertFile(string Dir)
+void insertFile(string dir)
 {
+	
 	string fileName;
 	cout << "Enter File Name: ";
 	cin >> fileName;
 	fileName = fileName + ".txt";
-	string filePath = Dir + "\\" + fileName;
+	string filePath = dir + "\\" + fileName;
 	string line;
 	stringstream content;
 	cout << "Input the text you want to write to the file. Type 141 to exit\n";
@@ -197,21 +257,76 @@ void insertFile(string Dir)
 void deleteFile(string Dir)
 {
 	string fileName;
-	
+
 
 	cout << "Enter File Name: ";
 	cin >> fileName;
 
 	string filePath = Dir + "\\" + fileName + ".txt";
-	//filePath = "Y:\\Season 3\\DS\\Data-Project\\Data Project\\MachineData\\13-12 19-34-38\\ghost.txt";
-	std::ifstream fileStream(filePath);
-	if (!fileStream.good()) {
-		std::cerr << "Error: File does not exist or cannot be opened.\n";
-		return;
-	}
-	fileStream.close();
 	if (remove(filePath.c_str()) != 0)
 		perror("Error deleting file");
 	else
 		puts("File successfully deleted");
+}
+
+void relocateFile(string source, string destination)
+{
+	ifstream inputFile(source);
+	string fileName;
+	if (!inputFile.is_open()) {
+		cerr << "Error opening file: " << source << std::endl;
+		return;
+	}
+
+	stringstream contentStream;
+	contentStream << inputFile.rdbuf();
+	inputFile.close();
+
+	int found = source.find_last_of("/\\");
+	if (found != string::npos) 
+	{
+		fileName = source.substr(found + 1);
+	}
+	else 
+	{
+		fileName = source;
+	}
+	cout << fileName;
+	if (remove(source.c_str()) != 0)
+		perror("Error deleting file");
+	else
+		puts("File successfully deleted");
+	destination = destination + "\\" + fileName;
+	ofstream outputFile(destination);
+	if (outputFile.is_open())
+	{
+		outputFile << contentStream.str() << endl;
+		outputFile.close();
+
+		cout << "File created successfully: " << fileName << std::endl;
+	}
+	else
+	{
+		cerr << "Error opening file: " << fileName << std::endl;
+
+	}
+
+}
+
+template <typename t>
+void addDatainMachines(CircularLinkedList<t>* Cll)
+{
+	int c = 0;
+	
+	cout<<"Enter data in Machines\n"; 
+	for (int i = 0; i < Cll->getCount(); i++)
+	{
+		cout<<"Enter No of Files you want to add for Machine with ID: "<<Cll->getHead()->getID()<<": \n";
+		cin >> c;
+		for (int i = 0; i < c; i++)
+		{
+			string dir = Dir + "\\" + to_string(Cll->getHead()->getID());
+			insertFile(dir);
+		}
+	}
 }
