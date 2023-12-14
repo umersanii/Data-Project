@@ -1,8 +1,8 @@
+#pragma once
 
 #include <iostream>
 #include "BTree.h"
 
-#pragma once
 using std::cout;
 using std::cin;
 using std::endl;
@@ -11,10 +11,9 @@ using std::string;
 extern string Dir;
 
 
-template <class t>
 class CNode
 {
-	t ID;
+	int ID;
 	CNode* next;
 	BTree* btree;
 
@@ -27,12 +26,12 @@ public:
 		next = nullptr;
 		ID = 0;
 	}
-	CNode(t xD)
+	CNode(int xD)
 	{
 		ID = xD;
 		next = nullptr;
 	}
-	t getID()
+	int getID()
 	{
 		return ID;
 	}
@@ -52,10 +51,9 @@ public:
 };
 
 
-template <typename t>
 class CircularLinkedList
 {
-	CNode<t>* head;
+	CNode* head;
 	int count;
 public:
 	int getCount()
@@ -69,13 +67,13 @@ public:
 		count = 0;
 	}
 
-	CNode<t>* getHead()
+	CNode* getHead()
 	{
 		return head;
 	}
-	void insert(t xN)
+	void insert(int xN)
 	{
-		CNode<t>* newNode = new CNode<t>(xN);
+		CNode* newNode = new CNode(xN);
 
 		if (head == nullptr)
 		{
@@ -85,7 +83,7 @@ public:
 			return;
 		}
 
-		CNode<t>* temp = head;
+		CNode* temp = head;
 		while (temp->getNext() != head)
 		{
 			temp = temp->getNext();
@@ -105,10 +103,10 @@ public:
 		return false;
 	}
 
-	bool search(t xD)
+	bool search(int xD)
 	{
 		int i = 0;
-		CNode<t>* temp = head;
+		CNode* temp = head;
 		int c = 0;
 		while (1)
 		{
@@ -119,18 +117,18 @@ public:
 					break;
 				}
 			}
-			if (temp->ID == xD)
+			if (temp->getID() == xD)
 				return true;
 
-			temp = temp->next;
+			temp = temp->getNext();
 			c++;
 		}
 		return false;
 	}
 
-	void update(t v1, t v2)
+	void update(int v1, int v2)
 	{
-		CNode<t>* temp = head;
+		CNode* temp = head;
 		int c = 0;
 		while (1)
 		{
@@ -141,40 +139,40 @@ public:
 					break;
 				}
 			}
-			if (temp->ID == v1)
-				temp->ID = v2;
+			if (temp->getID() == v1)
+				temp->setID(v2);
 
-			temp = temp->next;
+			temp = temp->getNext();
 			c++;
 		}
 	}
 
-	void insertAtIndex(t value, t position)
+	void insertAtIndex(int value, int position)
 	{
 
-		CNode<t>* newNode = new CNode<t>(value);
-		CNode<t>* temp = head;
+		CNode* newNode = new CNode(value);
+		CNode* temp = head;
 		int c = 1;
 		while (temp != nullptr)
 		{
 			if (c == position)
 			{
-				newNode->next = temp->next;
-				temp->next = newNode;
+				newNode->setNext(temp->getNext());
+				temp->setNext(newNode);
 				break;
 			}
 			c++;
 
-			temp = temp->next;
+			temp = temp->getNext();
 		}
 		count++;
 
 	}
 
-	void deleteID(t xD)
+	void deleteID(int xD)
 	{
-		CNode<t>* temp = head;
-		CNode<t>* prev = head;
+		CNode* temp = head;
+		CNode* prev = head;
 		int c = 0;
 		while (1)
 		{
@@ -195,7 +193,7 @@ public:
 
 	void print()
 	{
-		CNode<t>* temp = head;
+		CNode* temp = head;
 		int c = 0;
 		while (1)
 		{
@@ -214,7 +212,7 @@ public:
 
 	void printID()
 	{
-		CNode<t>* temp = head;
+		CNode* temp = head;
 		int c = 0;
 		while (1)
 		{
@@ -231,3 +229,4 @@ public:
 	}
 
 };
+

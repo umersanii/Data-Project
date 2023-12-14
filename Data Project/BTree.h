@@ -1,14 +1,23 @@
 #include <iostream>
+
 using namespace std;
 #pragma once
+
+struct Key 
+{
+	int key;
+	string path;
+    Key() : key(0), path("") {}
+    Key(int xkey, string xpath) : key(xkey), path(xpath) {}
+};
+
 class BTreeNode {
 public:
-    int* keys;
+    Key* keys;
     int t;
     BTreeNode** C;
     int n;
     bool leaf;
-    string content;
 
     BTreeNode(int _t, bool _leaf);
 
@@ -25,8 +34,13 @@ public:
     void borrowFromPrev(int idx);
     void borrowFromNext(int idx);
     void merge(int idx);
-    BTreeNode* search(int k);
+    int returnkeys();
+    void returnkeys(Key* k, int x, int limit);
 
+    
+
+
+    BTreeNode* search(int k);
     // Getter and Setter methods
     int getKeyAtIndex(int index) const;
     void setKeyAtIndex(int index, int value);
@@ -40,13 +54,18 @@ class BTree {
 public:
     BTreeNode* root;
     int t;
+    int totalkeys;
 
     BTree(int temp);
-
+    void insertion(int k);
+    int getTotalKeys() { return totalkeys; }
     void traverse();
     BTreeNode* search(int k);
-    void insertion(int k);
+    void insertion(Key k);
     void deletion(int k);
+    void deleteTree(BTreeNode* node);
+    Key returnkeys();
+    void returnkeys(Key* k, int limit);
 
     // Getter and Setter methods
     int getDegree() const;
@@ -58,18 +77,25 @@ BTreeNode::BTreeNode(int t1, bool leaf1) {
     t = t1;
     leaf = leaf1;
 
-    keys = new int[2 * t - 1];
+    keys = new Key[2 * t - 1];
     C = new BTreeNode * [2 * t];
 
     n = 0;
 }
 
+void BTree::returnkeys(Key* k, int limit)
+{
+    int i = 0;
+    if (root != nullptr)
+        root->returnkeys(k, i, limit);
+}
+
 int BTreeNode::getKeyAtIndex(int index) const {
-    return keys[index];
+    return keys[index].key;
 }
 
 void BTreeNode::setKeyAtIndex(int index, int value) {
-    keys[index] = value;
+    keys[index].key = value;
 }
 
 BTreeNode* BTreeNode::getChildAtIndex(int index) const {
@@ -93,16 +119,29 @@ void BTreeNode::traverse() {
     for (i = 0; i < n; i++) {
         if (!leaf)
             C[i]->traverse();
-        cout << " " << keys[i];
+        cout << " " << keys[i].key;
     }
 
     if (!leaf)
         C[i]->traverse();
 }
 
+int BTreeNode::returnkeys()
+{
+    int i;
+    for (i = 0; i < n; i++) {
+        if (!leaf)
+            C[i]->traverse();
+        return keys[i].key;
+    }
+
+    if (!leaf)
+        C[i]->traverse();
+
+}
 int BTreeNode::findKey(int k) {
     int idx = 0;
-    while (idx < n && keys[idx] < k)
+    while (idx < n && keys[idx].key < k)
         ++idx;
     return idx;
 }
@@ -111,22 +150,22 @@ void BTreeNode::insertNonFull(int k) {
     int i = n - 1;
 
     if (leaf) {
-        while (i >= 0 && keys[i] > k) {
+        while (i >= 0 && keys[i].key > k) {
             keys[i + 1] = keys[i];
             i--;
         }
 
-        keys[i + 1] = k;
+        keys[i + 1].key = k;
         n = n + 1;
     }
     else {
-        while (i >= 0 && keys[i] > k)
+        while (i >= 0 && keys[i].key > k)
             i--;
 
         if (C[i + 1]->n == 2 * t - 1) {
             splitChild(i + 1, C[i + 1]);
 
-            if (keys[i + 1] < k)
+            if (keys[i + 1].key < k)
                 i++;
         }
         C[i + 1]->insertNonFull(k);
@@ -164,7 +203,7 @@ void BTreeNode::splitChild(int i, BTreeNode* y)
 void BTreeNode::deletion(int k) {
     int idx = findKey(k);
 
-    if (idx < n && keys[idx] == k) {
+    if (idx < n && keys[idx].key == k) {
         if (leaf)
             removeFromLeaf(idx);
         else
@@ -199,17 +238,17 @@ void BTreeNode::removeFromLeaf(int idx) {
 }
 
 void BTreeNode::removeFromNonLeaf(int idx) {
-    int k = keys[idx];
+    int k = keys[idx].key;
 
     if (C[idx]->n >= t) {
         int pred = getPredecessor(idx);
-        keys[idx] = pred;
+        keys[idx].key = pred;
         C[idx]->deletion(pred);
     }
 
     else if (C[idx + 1]->n >= t) {
         int succ = getSuccessor(idx);
-        keys[idx] = succ;
+        keys[idx].key = succ;
         C[idx + 1]->deletion(succ);
     }
 
@@ -225,7 +264,7 @@ int BTreeNode::getPredecessor(int idx) {
     while (!cur->leaf)
         cur = cur->C[cur->n];
 
-    return cur->keys[cur->n - 1];
+    return cur->keys[cur->n - 1].key;
 }
 
 int BTreeNode::getSuccessor(int idx) {
@@ -233,7 +272,7 @@ int BTreeNode::getSuccessor(int idx) {
     while (!cur->leaf)
         cur = cur->C[0];
 
-    return cur->keys[0];
+    return cur->keys[0].key;
 }
 
 void BTreeNode::fill(int idx) {
@@ -331,10 +370,10 @@ void BTreeNode::merge(int idx) {
 
 BTreeNode* BTreeNode::search(int k) {
     int i = 0;
-    while (i < n && k > keys[i])
+    while (i < n && k > keys[i].key)
         i++;
 
-    if (keys[i] == k)
+    if (keys[i].key == k)
         return this;
 
     if (leaf == true)
@@ -347,6 +386,7 @@ BTreeNode* BTreeNode::search(int k) {
 BTree::BTree(int temp) {
     root = nullptr;
     t = temp;
+    totalkeys = 0;
 }
 
 int BTree::getDegree() const {
@@ -366,11 +406,40 @@ BTreeNode* BTree::search(int k) {
     return (root == nullptr) ? nullptr : root->search(k);
 }
 
+void BTree::insertion(Key k) {
+    if (root == nullptr) {
+        root = new BTreeNode(t, true);
+        root->setKeyAtIndex(0, k.key);
+        root->n = 1;
+    }
+    else {
+        if (root->n == 2 * t - 1) {
+            BTreeNode* s = new BTreeNode(t, false);
+
+            s->setChildAtIndex(0, root);
+
+            s->splitChild(0, root);
+
+            int i = 0;
+            if (s->getKeyAtIndex(0) < k.key)
+                i++;
+            s->getChildAtIndex(i)->insertNonFull(k.key);
+
+            root = s;
+        }
+        else
+            root->insertNonFull(k.key);
+    }
+    totalkeys++;
+
+}
+
 void BTree::insertion(int k) {
     if (root == nullptr) {
         root = new BTreeNode(t, true);
         root->setKeyAtIndex(0, k);
         root->n = 1;
+
     }
     else {
         if (root->n == 2 * t - 1) {
@@ -389,7 +458,10 @@ void BTree::insertion(int k) {
         }
         else
             root->insertNonFull(k);
+
     }
+    totalkeys++;
+
 }
 
 void BTree::deletion(int k) 
@@ -410,6 +482,38 @@ void BTree::deletion(int k)
 
         delete tmp;
     }
+    totalkeys--;
     return;
 }
 
+void BTree::deleteTree(BTreeNode* node) 
+{
+    if (node != nullptr) {
+        for (int i = 0; i < node->n + 1; ++i) {
+            deleteTree(node->C[i]);
+        }
+        delete node;
+    }
+}
+
+
+
+void BTreeNode::returnkeys(Key* k, int x, int limit) 
+{
+  
+
+    int i;
+    for (i = 0; i < n; i++) {
+        if (x == limit)
+            return;
+
+        if (!leaf)
+            C[i]->traverse();
+        k[x] = keys[i];
+        x++;
+        
+    }
+
+    if (!leaf)
+        C[i]->traverse();
+}

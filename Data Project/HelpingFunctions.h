@@ -38,15 +38,14 @@ extern string Dir;
 
 void createFolderWithCurrentTime(const wstring& parentPath);
 int CalculateHash(string file, int identifierSpace);
-template <class t>
-CircularLinkedList<t>* makeNumberOfMachines(int n);
-template <typename t>
-void  manuallyAssignIDs(CNode<t>* Cll);
+CircularLinkedList* makeNumberOfMachines(int n);
+void  manuallyAssignIDs(CNode* Cll);
 void insertFile(string Dir);
 void deleteFile(string Dir);
 void relocateFile(string source, string destination);
 void addDatainMachines();
 void createFolder(string name);
+void mergeBTrees(BTree* source, BTree* destination);
 
 
 int CalculateHash(string file, int identifierSpace)
@@ -63,8 +62,7 @@ int CalculateHash(string file, int identifierSpace)
 }
 
 /////////////////
-template <class t>
-CircularLinkedList<t>* makeNumberOfMachines(int n)
+CircularLinkedList* makeNumberOfMachines(int n)
 {
 	char choice;
 	bool flag = true;
@@ -84,7 +82,7 @@ enteragain:
 		cout << "Invalid Choice. Enter again\n";
 		goto enteragain;
 	}
-	CircularLinkedList<t>* Clist = new CircularLinkedList<t>();
+	CircularLinkedList* Clist = new CircularLinkedList();
 	for (int i = 0; i < n; i++)
 	{
 		Clist->insert(i);
@@ -102,10 +100,9 @@ enteragain:
 	return Clist;
 }
 
-template <typename t>
-void  manuallyAssignIDs(CNode<t>* Cll)
+void  manuallyAssignIDs(CNode* Cll)
 {
-	CNode<t>* tempHead = Cll;
+	CNode* tempHead = Cll;
 	bool flag = true;
 	cout << "Enter IDs for the Machine One by One. \n";
 	int c = 1;
@@ -128,7 +125,7 @@ void  manuallyAssignIDs(CNode<t>* Cll)
 }	
 
 template <typename t>
-void insertaNewMachine(CircularLinkedList<t>* Cll)
+void insertaNewMachine(CircularLinkedList* Cll)
 {
 	int ID;
 	cout << "Enter the Machine ID: ";
@@ -313,11 +310,10 @@ void relocateFile(string source, string destination)
 
 }
 
-template <typename t>
-void addDatainMachines(CircularLinkedList<t>* Cll)
+void addDatainMachines(CircularLinkedList* Cll)
 {
 	int c = 0;
-	
+	CNode* tempHead = Cll->getHead();
 	cout<<"Enter data in Machines\n"; 
 	for (int i = 0; i < Cll->getCount(); i++)
 	{
@@ -325,8 +321,34 @@ void addDatainMachines(CircularLinkedList<t>* Cll)
 		cin >> c;
 		for (int i = 0; i < c; i++)
 		{
-			string dir = Dir + "\\" + to_string(Cll->getHead()->getID());
+			string dir = Dir + "\\" + to_string(tempHead->getID());
 			insertFile(dir);
+			tempHead = tempHead->getNext();
+
 		}
+
 	}
+}
+
+void mergeBTrees(BTree* source, BTree* destination)
+{
+	cout << "\n\n\n";
+	source->traverse();
+	source->getTotalKeys();
+	cout << "\n\n\n";
+
+
+	Key* keyarray = new Key[source->getTotalKeys()];
+	source->returnkeys(keyarray, source->getTotalKeys());
+	for (int i = 0; i < source->getTotalKeys(); i++)
+	{
+		destination->insertion(keyarray[i]);
+	}
+	for (int i = 0; i < source->getTotalKeys(); i++)
+	{
+		source->deletion(keyarray[i].key);
+	}
+	source->root = nullptr;
+	delete[] keyarray;
+	return;
 }
