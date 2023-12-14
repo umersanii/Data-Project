@@ -41,13 +41,30 @@ public:
 	}
 	CNode* getNext()
 	{
+		if(next != nullptr)
 		return next;
+		return nullptr;
 	}
 	void setNext(CNode* xN)
 	{
 		next = xN;
 	}
-	
+	void insertBTree(Key k)
+	{
+		btree->insertion(k);
+	}
+	void PrintBTree()
+	{
+		btree->traverse();
+	}
+	void initializeBTree(int n)
+	{
+		btree = new BTree(n);
+	}
+	BTreeNode* GetBTreeRoot() {
+		return btree->root ;
+	}
+
 };
 
 
@@ -78,13 +95,12 @@ public:
 		if (head == nullptr)
 		{
 			head = newNode;
-			head->setNext(head);
 			count++;
 			return;
 		}
 
 		CNode* temp = head;
-		while (temp->getNext() != head)
+		while (temp != head)
 		{
 			temp = temp->getNext();
 		}
@@ -228,5 +244,14 @@ public:
 		cout << "\n";
 	}
 
+	void printWhole()
+	{
+		CNode* temp = head;
+		for (int i = 0; i < count; i++)
+		{
+			head->PrintBTree();
+			head = head->getNext();
+		}
+	}
 };
 

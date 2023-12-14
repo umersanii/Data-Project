@@ -7,6 +7,7 @@ struct Key
 {
 	int key;
 	string path;
+    // var record
     Key() : key(0), path("") {}
     Key(int xkey, string xpath) : key(xkey), path(xpath) {}
 };
@@ -23,7 +24,7 @@ public:
 
     void traverse();
     int findKey(int k);
-    void insertNonFull(int k);
+    void insertNonFull(Key k);
     void splitChild(int i, BTreeNode* y);
     void deletion(int k);
     void removeFromLeaf(int idx);
@@ -43,7 +44,7 @@ public:
     BTreeNode* search(int k);
     // Getter and Setter methods
     int getKeyAtIndex(int index) const;
-    void setKeyAtIndex(int index, int value);
+    void setKeyAtIndex(int index, Key value);
     BTreeNode* getChildAtIndex(int index) const;
     void setChildAtIndex(int index, BTreeNode* child);
     int getNumKeys() const;
@@ -83,6 +84,7 @@ BTreeNode::BTreeNode(int t1, bool leaf1) {
     n = 0;
 }
 
+
 void BTree::returnkeys(Key* k, int limit)
 {
     int i = 0;
@@ -94,8 +96,8 @@ int BTreeNode::getKeyAtIndex(int index) const {
     return keys[index].key;
 }
 
-void BTreeNode::setKeyAtIndex(int index, int value) {
-    keys[index].key = value;
+void BTreeNode::setKeyAtIndex(int index, Key value) {
+    keys[index] = value;
 }
 
 BTreeNode* BTreeNode::getChildAtIndex(int index) const {
@@ -146,26 +148,26 @@ int BTreeNode::findKey(int k) {
     return idx;
 }
 
-void BTreeNode::insertNonFull(int k) {
+void BTreeNode::insertNonFull(Key k) {
     int i = n - 1;
 
     if (leaf) {
-        while (i >= 0 && keys[i].key > k) {
+        while (i >= 0 && keys[i].key > k.key) {
             keys[i + 1] = keys[i];
             i--;
         }
 
-        keys[i + 1].key = k;
+        keys[i + 1] = k;
         n = n + 1;
     }
     else {
-        while (i >= 0 && keys[i].key > k)
+        while (i >= 0 && keys[i].key > k.key)
             i--;
 
         if (C[i + 1]->n == 2 * t - 1) {
             splitChild(i + 1, C[i + 1]);
 
-            if (keys[i + 1].key < k)
+            if (keys[i + 1].key < k.key)
                 i++;
         }
         C[i + 1]->insertNonFull(k);
@@ -409,7 +411,7 @@ BTreeNode* BTree::search(int k) {
 void BTree::insertion(Key k) {
     if (root == nullptr) {
         root = new BTreeNode(t, true);
-        root->setKeyAtIndex(0, k.key);
+        root->setKeyAtIndex(0, k);
         root->n = 1;
     }
     else {
@@ -423,46 +425,18 @@ void BTree::insertion(Key k) {
             int i = 0;
             if (s->getKeyAtIndex(0) < k.key)
                 i++;
-            s->getChildAtIndex(i)->insertNonFull(k.key);
-
-            root = s;
-        }
-        else
-            root->insertNonFull(k.key);
-    }
-    totalkeys++;
-
-}
-
-void BTree::insertion(int k) {
-    if (root == nullptr) {
-        root = new BTreeNode(t, true);
-        root->setKeyAtIndex(0, k);
-        root->n = 1;
-
-    }
-    else {
-        if (root->n == 2 * t - 1) {
-            BTreeNode* s = new BTreeNode(t, false);
-
-            s->setChildAtIndex(0, root);
-
-            s->splitChild(0, root);
-
-            int i = 0;
-            if (s->getKeyAtIndex(0) < k)
-                i++;
             s->getChildAtIndex(i)->insertNonFull(k);
 
             root = s;
         }
         else
             root->insertNonFull(k);
-
     }
     totalkeys++;
 
 }
+
+
 
 void BTree::deletion(int k) 
 {

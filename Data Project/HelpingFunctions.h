@@ -83,12 +83,28 @@ enteragain:
 		goto enteragain;
 	}
 	CircularLinkedList* Clist = new CircularLinkedList();
+	CNode* temp = nullptr;
 	for (int i = 0; i < n; i++)
 	{
-		Clist->insert(i);
+		if(Clist->getHead() == nullptr)
+		{
+			Clist->insert(i);
+			temp = Clist->getHead();
+		}
+		else
+		{
+			Clist->insert(i);
+			temp = temp->getNext();
+		}
+
+
+		temp->initializeBTree(n);
+		temp->GetBTreeRoot();
+
 		if (flag == true)
 		{
 			createFolder(to_string(i));
+
 		}
 	}
 
@@ -97,6 +113,8 @@ enteragain:
 		manuallyAssignIDs(Clist->getHead());
 
 	}
+
+
 	return Clist;
 }
 
@@ -323,9 +341,14 @@ void addDatainMachines(CircularLinkedList* Cll)
 		{
 			string dir = Dir + "\\" + to_string(tempHead->getID());
 			insertFile(dir);
-			tempHead = tempHead->getNext();
+			int hash = CalculateHash(dir, 8);
+			Key k (hash, dir);
+			tempHead->insertBTree(k);
 
+
+			
 		}
+		tempHead = tempHead->getNext();
 
 	}
 }
